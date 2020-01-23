@@ -4,6 +4,7 @@ exports.up = function(knex) {
         tbl.increments();
         tbl.string('username', 180).notNullable().unique();
         tbl.string('pw', 180).notNullable();
+        tbl.string('summonerid', 180).notNullable();
     })
 };
 
