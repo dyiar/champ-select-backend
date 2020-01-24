@@ -17,6 +17,8 @@ function generateToken(user) {
     const options = {
         expiresIn: "120m"
     };
+    let test = jwt.sign(payload, secret, options)
+    console.log(test, "test")
     return jwt.sign(payload, secret, options)
 }
 
@@ -37,7 +39,7 @@ function login(req, res) {
         .then(user => {
             if (user && bcrypt.compareSync(creds.pw, user.pw)) {
                 const token = generateToken(user);
-                res.status(200).json({ message: `Welcome ${user.username}`, token });
+                res.status(200).json({ username: `${user.username}`, token });
             } else {
                 res.status(401).json({
                     message: "Login failed. Please enter the correct username and password."
