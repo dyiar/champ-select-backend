@@ -2,16 +2,16 @@
 exports.up = function(knex) {
     return knex.schema.createTable('games', function(tbl) {
         tbl.integer('gameid').notNullable();
-        tbl.integer('player').notNullable();
-        tbl.integer('a1').notNullable();
-        tbl.integer('a2').notNullable();
-        tbl.integer('a3').notNullable();
-        tbl.integer('a4').notNullable();
-        tbl.integer('o1').notNullable();
-        tbl.integer('o2').notNullable();
-        tbl.integer('o3').notNullable();
-        tbl.integer('o4').notNullable();
-        tbl.integer('o5').notNullable();
+        tbl.integer('r1').notNullable();
+        tbl.integer('r2').notNullable();
+        tbl.integer('r3').notNullable();
+        tbl.integer('r4').notNullable();
+        tbl.integer('r5').notNullable();
+        tbl.integer('b1').notNullable();
+        tbl.integer('b2').notNullable();
+        tbl.integer('b3').notNullable();
+        tbl.integer('b4').notNullable();
+        tbl.integer('b5').notNullable();
         tbl.boolean('result').notNullable();
     })
 };
