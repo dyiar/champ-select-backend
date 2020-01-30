@@ -20,17 +20,26 @@ async function getAllGames(summonerid, beginningIndex) {
     }
 }
 
-async function getSingleGames(gamesData, summonerid) {
+async function getSingleGames(gamesData, summonerid, res = undefined) {
     let matches = gamesData.matches
     let startIndex = gamesData.startIndex
     let totalGames = gamesData.totalGames
     let endIndex = gamesData.endIndex
     let counter = 0
+
+
+    db('games').count('gameid', {as: 'games'}).then(total => {
+        if(total[0].games === totalGames) {
+            console.log('all games logged')
+            break
+        }
+    })
+
     try {
-    while (startIndex <= endIndex) {
+    while (startIndex < endIndex) {
         console.log(counter)
         let response = await axios.get(`https://na1.api.riotgames.com/lol/match/v4/matches/${matches[counter].gameId}?api_key=${api_key}`)
-        console.log(response.data)
+        // console.log(response.data)
         let r1 = await response.data.participants[0].championId
         let r2 = await response.data.participants[1].championId
         let r3 = await response.data.participants[2].championId
@@ -60,14 +69,26 @@ async function getSingleGames(gamesData, summonerid) {
         } else if (redBlue === true && response.data.teams[0].win == 'Fail') {
             result = 0
         }
-            // console.log(response.data.gameId, r1, r2, r3, r4, r5, b1, b2, b3, b4, b5, result)
-            if(db('games').where({gameId: response.data.gameId}).first() == response.data.gameId) {
-                console.log('already inserted ' + startIndex)
-            } else {
-            db('games')
-                .insert({gameId: response.data.gameId, r1: r1, r2: r2, r3: r3, r4: r4, r5: r5, b1: b1, b2: b2, b3: b3, b4: b4, b5: b5, result: result}).then(() => {
-                }).catch((error) => console.log(error) )
-            }
+            console.log(response.data.gameId, r1, r2, r3, r4, r5, b1, b2, b3, b4, b5, result)
+            db('games').where({gameid: response.data.gameId}).first().then(id => {
+                if (id) {
+                    console.log('already inserted')
+                } else {
+                    console.log('inserting')
+                    db('games')
+                    .insert({gameid: response.data.gameId, r1: r1, r2: r2, r3: r3, r4: r4, r5: r5, b1: b1, b2: b2, b3: b3, b4: b4, b5: b5, result: result}).then(gameid => {
+                        res.send({inserted: gameid})
+                    }).catch((error) => console.log(error) )
+                }
+            })
+
+            // if(db('games').where({gameid: response.data.gameId}).first() == response.data.gameId) {
+            //     console.log('already inserted ' + startIndex)
+            // } else {
+            // db('games')
+            //     .insert({gameid: response.data.gameId, r1: r1, r2: r2, r3: r3, r4: r4, r5: r5, b1: b1, b2: b2, b3: b3, b4: b4, b5: b5, result: result}).then(() => {
+            //     }).catch((error) => console.log(error) )
+            // }
 
         if (counter == 98) {
             break
@@ -85,6 +106,7 @@ async function getSingleGames(gamesData, summonerid) {
         }, 123000);
     } else {
         console.log('exit single games')
+        res.status(200).send('finished')
         return
     }
 }
@@ -102,9 +124,16 @@ router.post("/all", authenticate, async (req, res, next) => {
         getAllGames(user.summonerid, 0)
     })
 
-    res.status(200).send('ok')
+    res.send({ status: 'grabbing games. this may take a while'})
+
+})
+
+router.get('/test', (req, res) => {
 
 
+    db('games').count('gameid', {as: 'g'}).then(total => {
+        console.log(total[0].g)
+    })
 })
 
 module.exports = router;
