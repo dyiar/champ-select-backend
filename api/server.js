@@ -1,6 +1,6 @@
 const express = require('express');
-// const cors = require('cors');
-// const helmet = require('helmet');
+const cors = require('cors');
+const helmet = require('helmet');
 const usersRouter = require('./usersRoutes/users');
 const gamesRouter = require('./gamesRoutes/games');
 const statsRouter = require('./statsRoutes/stats');
@@ -8,8 +8,8 @@ const statsRouter = require('./statsRoutes/stats');
 
 const server = express();
 
-// server.use(helmet());
-// server.use(cors());
+server.use(helmet());
+server.use(cors());
 server.use(express.json());
 
 server.use('/users', usersRouter);
