@@ -67,7 +67,7 @@ router.post('/register', async (req, res, next) => {
             res.status(201).send(ids)
         })
 
-        .catch(() => res.status(500).send({error: "Data was not saved"}))
+        .catch(error => res.status(500).send({error: error}))
     } catch (error) {
         return next(error)
     }
