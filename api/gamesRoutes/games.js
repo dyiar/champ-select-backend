@@ -28,12 +28,12 @@ async function getSingleGames(gamesData, summonerid, res = undefined) {
     let counter = 0
 
 
-    db('games').count('gameid', {as: 'games'}).then(total => {
-        if(total[0].games === totalGames) {
-            console.log('all games logged')
-            break
-        }
-    })
+    // db('games').count('gameid', {as: 'games'}).then(total => {
+    //     if(total[0].games === totalGames) {
+    //         console.log('all games logged')
+    //         break
+    //     }
+    // })
 
     try {
     while (startIndex < endIndex) {
