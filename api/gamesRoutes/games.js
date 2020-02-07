@@ -8,19 +8,19 @@ const api_key = process.env.API_KEY;
 
 //middleware
 
-async function getAllGames(summonerid, beginningIndex) {
+async function getAllGames(summonerid, beginningIndex, res) {
     try {
         let response = await axios.get(`https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/${summonerid}?queue=420&queue=%20440&beginIndex=${beginningIndex}&api_key=${api_key}`)
         let gamesData = await response.data;
 
-        getSingleGames(gamesData, summonerid)
+        getSingleGames(gamesData, summonerid, res)
 
     } catch (error) {
-        return error
+        res.status(401).send(error)
     }
 }
 
-async function getSingleGames(gamesData, summonerid, res = undefined) {
+async function getSingleGames(gamesData, summonerid, res) {
     let matches = gamesData.matches
     let startIndex = gamesData.startIndex
     let totalGames = gamesData.totalGames
@@ -77,8 +77,9 @@ async function getSingleGames(gamesData, summonerid, res = undefined) {
                     console.log('inserting')
                     db('games')
                     .insert({gameid: response.data.gameId, r1: r1, r2: r2, r3: r3, r4: r4, r5: r5, b1: b1, b2: b2, b3: b3, b4: b4, b5: b5, result: result}).then(gameid => {
-                        res.send({inserted: gameid})
-                    }).catch((error) => console.log(error) )
+                        res.send({gameid: gameid})
+                    })
+                    .catch((error) => res.send(error) )
                 }
             })
 
@@ -121,10 +122,10 @@ catch (error){
 router.post("/all", authenticate, async (req, res, next) => {
 
     db('users').where({ username: req.body.username }).first().then(user => {
-        getAllGames(user.summonerid, 0)
+        getAllGames(user.summonerid, 0, res)
     })
 
-    res.send({ status: 'grabbing games. this may take a while'})
+    // res.send({ status: 'grabbing games. this may take a while'})
 
 })
 
