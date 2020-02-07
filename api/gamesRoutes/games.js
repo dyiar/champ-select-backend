@@ -72,6 +72,7 @@ async function getSingleGames(gamesData, summonerid, res) {
             console.log(response.data.gameId, r1, r2, r3, r4, r5, b1, b2, b3, b4, b5, result)
             db('games').where({gameid: response.data.gameId}).first().then(id => {
                 if (id) {
+                    res.status(200).send({id: id})
                     console.log('already inserted')
                 } else {
                     console.log('inserting')
