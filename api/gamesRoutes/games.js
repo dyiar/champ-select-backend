@@ -3,6 +3,7 @@ const db = require('../../dbconfig');
 const axios = require('axios');
 const { authenticate } = require("../../auth/authenticate");
 const router = express.Router();
+const {check, validationResult} = require('express-validator/check');
 
 const api_key = process.env.API_KEY;
 
@@ -110,14 +111,26 @@ async function getSingleGames(gamesData, summonerid, res) {
     }
 }
 catch (error){
-    return error
+
+    return res.status(401).send({error: error})
+
 }
 
 }
 
 //endpoints
 
-router.post("/all", authenticate, async (req, res, next) => {
+router.post("/all", authenticate,[
+    check('username').not().isEmpty().escape(),
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+ }, async (req, res, next) => {
 
     db('users').where({ username: req.body.username }).first().then(user => {
         getAllGames(user.summonerid, 0, res)
@@ -127,12 +140,12 @@ router.post("/all", authenticate, async (req, res, next) => {
 
 })
 
-router.get('/test', (req, res) => {
+// router.get('/test', (req, res) => {
 
 
-    db('games').count('gameid', {as: 'g'}).then(total => {
-        console.log(total[0].g)
-    })
-})
+//     db('games').count('gameid', {as: 'g'}).then(total => {
+//         console.log(total[0].g)
+//     })
+// })
 
 module.exports = router;

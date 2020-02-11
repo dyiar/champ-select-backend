@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../../dbconfig');
 const router = express.Router();
+const {check, validationResult} = require('express-validator/check');
 
 
 //middleware
@@ -21,6 +22,9 @@ function doBans(b, res) {
         
         let winrate = getWinrate(result)
         res.status(200).send({winrate: winrate})
+    })
+    .catch(error => {
+        res.status(401).send({error: error})
     })
 }
 
@@ -65,6 +69,9 @@ function doAllies(a, res) {
         let winrate = getWinrate(result)
         res.status(200).send({winrate: winrate})
     })
+    .catch(error => {
+        res.status(401).send({error: error})
+    })
 }
 
 function myPick(p, res) {
@@ -74,6 +81,9 @@ function myPick(p, res) {
         
         let winrate = getWinrate(result)
         res.status(200).send({winrate: winrate})
+    })
+    .catch(error => {
+        res.status(401).send({error: error})
     })
 }
 
@@ -90,28 +100,88 @@ function doEnemies(a, res) {
         let winrate = getLossrate(result)
         res.status(200).send({winrate: winrate})
     })
+    .catch(error => {
+        res.status(401).send({error: error})
+    })
 }
 
 //endpoints
 
-router.post('/bans', async (req, res) => {
+router.post('/bans', [
+    check('b1').not().isEmpty().escape().isInt(),
+    check('b2').not().isEmpty().escape().isInt(),
+    check('b3').not().isEmpty().escape().isInt(),
+    check('b4').not().isEmpty().escape().isInt(),
+    check('b5').not().isEmpty().escape().isInt(),
+    check('b6').not().isEmpty().escape().isInt(),
+    check('b7').not().isEmpty().escape().isInt(),
+    check('b8').not().isEmpty().escape().isInt(),
+    check('b9').not().isEmpty().escape().isInt(),
+    check('b10').not().isEmpty().escape().isInt()
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+ }, async (req, res) => {
 
     doBans(req.body, res)
     
 })
 
-router.post('/allies', (req, res) => {
+router.post('/allies', [
+    check('a1').not().isEmpty().escape().isInt(),
+    check('a2').not().isEmpty().escape().isInt(),
+    check('a3').not().isEmpty().escape().isInt(),
+    check('a4').not().isEmpty().escape().isInt(),
+    check('a5').not().isEmpty().escape().isInt(),
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+ }, (req, res) => {
 
     doAllies(req.body, res);
 
 })
 
-router.post('/mypick', (req, res) => {
+router.post('/mypick', [
+    check('p').not().isEmpty().escape().isInt()
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+ }, (req, res) => {
 
     myPick(req.body, res);
 })
 
-router.post('/enemies', (req, res) => {
+router.post('/enemies', [
+    check('a1').not().isEmpty().escape().isInt(),
+    check('a2').not().isEmpty().escape().isInt(),
+    check('a3').not().isEmpty().escape().isInt(),
+    check('a4').not().isEmpty().escape().isInt(),
+    check('a5').not().isEmpty().escape().isInt(),
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+ }, (req, res) => {
 
     doEnemies(req.body, res);
 })

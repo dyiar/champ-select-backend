@@ -3,6 +3,8 @@ const db = require('../../dbconfig');
 const axios = require('axios');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const {check, validationResult} = require('express-validator/check');
+
 
 const router = express.Router();
 
@@ -49,7 +51,19 @@ function login(req, res) {
 
 //endpoints
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', [
+    check('accountName').not().isEmpty().withMessage('Must enter valid LoL Summoner IGN').escape(),
+    check('username').not().isEmpty().escape(),
+    check('pw').not().isEmpty().escape()
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+}, async (req, res, next) => {
     const accountName = req.body.accountName;
     // const username = req.params.username;
     // const pw = req.params.pw;
@@ -73,7 +87,18 @@ router.post('/register', async (req, res, next) => {
     }
 })
 
-router.post('/login', login, (req, res) => {
+router.post('/login', [
+    check('username').not().isEmpty().escape(),
+    check('pw').not().isEmpty().escape()
+
+],
+function(req, res) {
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()) {
+        return res.status(422).jsonp(errors.array());
+    }
+ }, login, (req, res) => {
 
 })
 
