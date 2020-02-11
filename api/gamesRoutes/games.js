@@ -72,14 +72,11 @@ async function getSingleGames(gamesData, summonerid, res) {
             console.log(response.data.gameId, r1, r2, r3, r4, r5, b1, b2, b3, b4, b5, result)
             db('games').where({gameid: response.data.gameId}).first().then(id => {
                 if (id) {
-                    res.status(200).send({id: id})
                     console.log('already inserted')
                 } else {
                     console.log('inserting')
                     db('games')
-                    .insert({gameid: response.data.gameId, r1: r1, r2: r2, r3: r3, r4: r4, r5: r5, b1: b1, b2: b2, b3: b3, b4: b4, b5: b5, result: result}).then(gameid => {
-                        res.send({gameid: gameid})
-                    })
+                    .insert({gameid: response.data.gameId, r1: r1, r2: r2, r3: r3, r4: r4, r5: r5, b1: b1, b2: b2, b3: b3, b4: b4, b5: b5, result: result})
                     .catch((error) => res.send(error) )
                 }
             })
@@ -126,7 +123,7 @@ router.post("/all", authenticate, async (req, res, next) => {
         getAllGames(user.summonerid, 0, res)
     })
 
-    // res.send({ status: 'grabbing games. this may take a while'})
+    res.send({ status: 'grabbing games. this may take a while'})
 
 })
 
