@@ -3,7 +3,7 @@ const db = require('../../dbconfig');
 const axios = require('axios');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const {check, validationResult} = require('express-validator/check');
+const {check, validationResult} = require('express-validator');
 
 
 const router = express.Router();
